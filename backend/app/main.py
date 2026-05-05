@@ -64,10 +64,12 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://task-manager-system-assignment.vercel.app",
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
         "http://localhost:3000",
+
     ],  # Update with Vercel URL after deploy
     allow_credentials=True,
     allow_methods=["*"],
