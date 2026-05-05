@@ -160,3 +160,9 @@ html, body, #root {
   margin-right: 0.5rem;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Server-waking banner entrance */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}

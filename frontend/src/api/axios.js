@@ -9,8 +9,10 @@
  *   - In local dev: falls back to '/api', which Vite proxies to
  *     http://localhost:8000/api automatically.
  *
- * A request interceptor automatically attaches the Bearer JWT from
- * localStorage to every outgoing request.
+ * Slow-server detection:
+ *   If a request takes longer than 3 s, a `server-slow` CustomEvent is
+ *   dispatched on window. When it finishes, `server-ready` is dispatched.
+ *   ServerWakingBanner.jsx listens for these to show a friendly message.
  */
 
 import axios from 'axios';
@@ -25,20 +27,55 @@ const api = axios.create({
   },
 });
 
-// Attach JWT on every request if one is stored
+// ---------------------------------------------------------------------------
+// Slow-server detection
+// ---------------------------------------------------------------------------
+const SLOW_THRESHOLD = 3000; // ms
+
+// Track in-flight slow requests — hide banner only when ALL finish.
+let slowRequestCount = 0;
+
+function notifySlow() {
+  slowRequestCount += 1;
+  window.dispatchEvent(new CustomEvent('server-slow'));
+}
+
+function notifyReady() {
+  if (slowRequestCount > 0) {
+    slowRequestCount -= 1;
+    if (slowRequestCount === 0) {
+      window.dispatchEvent(new CustomEvent('server-ready'));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Request interceptor — attach JWT + start slow timer
+// ---------------------------------------------------------------------------
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Each request carries its own timer so concurrent requests don't clash
+  config._slowTimer = setTimeout(notifySlow, SLOW_THRESHOLD);
   return config;
 });
 
-// Global response error handler – on 401, wipe local storage so the
-// ProtectedRoute guard redirects to /login automatically.
+// ---------------------------------------------------------------------------
+// Response interceptors — clear timer, notify ready, handle 401
+// ---------------------------------------------------------------------------
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    clearTimeout(response.config._slowTimer);
+    notifyReady();
+    return response;
+  },
   (error) => {
+    if (error.config?._slowTimer) {
+      clearTimeout(error.config._slowTimer);
+      notifyReady();
+    }
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');

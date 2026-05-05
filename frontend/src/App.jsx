@@ -14,6 +14,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ServerWakingBanner from './components/ServerWakingBanner';
 import LoginPage    from './pages/LoginPage';
 import SignupPage   from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
@@ -28,6 +29,9 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      {/* Global slow-server toast — works on every page */}
+      <ServerWakingBanner />
+
       <Routes>
         {/* Root → dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
