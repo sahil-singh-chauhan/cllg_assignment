@@ -3,16 +3,23 @@
  *
  * Pre-configured Axios instance for the Team Task Manager API.
  *
- * - baseURL points to the FastAPI backend (proxied via Vite in dev).
- * - A request interceptor automatically attaches the Bearer JWT from
- *   localStorage to every outgoing request, so individual callers
- *   never need to think about auth headers.
+ * baseURL resolution:
+ *   - In production: VITE_API_URL must be set to the full backend URL,
+ *     e.g. https://your-backend.up.railway.app/api
+ *   - In local dev: falls back to '/api', which Vite proxies to
+ *     http://localhost:8000/api automatically.
+ *
+ * A request interceptor automatically attaches the Bearer JWT from
+ * localStorage to every outgoing request.
  */
 
 import axios from 'axios';
 
+// Vite exposes env vars prefixed with VITE_ via import.meta.env
+const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
+
 const api = axios.create({
-  baseURL: '/api',            // Vite dev proxy forwards to http://localhost:8000
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

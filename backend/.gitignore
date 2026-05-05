@@ -27,3 +27,33 @@ build/
 .pytest_cache/
 htmlcov/
 .coverage
+# ========================
+# BACKEND (Python/FastAPI)
+# ========================
+# Environments
+.env
+.venv
+venv/
+ENV/
+
+# Compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ========================
+# FRONTEND (React/Vite)
+# ========================
+node_modules/
+dist/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ========================
+# OS & Misc
+# ========================
+.DS_Store
+Thumbs.db
