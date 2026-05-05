@@ -1,0 +1,23 @@
+# ── Web Framework ──────────────────────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# ── Database (Async SQLAlchemy + asyncpg driver for PostgreSQL) ─────────────
+sqlalchemy[asyncio]==2.0.30
+asyncpg==0.29.0
+
+# ── Environment Variables ───────────────────────────────────────────────────
+python-dotenv==1.0.1
+
+# ── Security (JWT + password hashing) ──────────────────────────────────────
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1              # passlib 1.7.4 is incompatible with bcrypt>=4.1 (removed __about__)
+python-jose[cryptography]==3.3.0
+
+# ── Data Validation ─────────────────────────────────────────────────────────
+pydantic==2.7.1
+email-validator==2.1.1     # Required by pydantic's EmailStr field type
+pydantic-settings==2.2.1
+
+# ── CORS (bundled with FastAPI, listed explicitly for clarity) ───────────────
+# starlette is a transitive dependency of FastAPI; no explicit pin needed.
